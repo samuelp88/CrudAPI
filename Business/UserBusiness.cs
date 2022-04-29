@@ -14,12 +14,14 @@ namespace CrudAPI.Business
         private readonly IUserRepository _repository;
         private readonly ITokenService _tokenService;
         private readonly IParser<User, UserVO> _userParser;
+        private readonly IInputValidator _inputValidator;
 
-        public UserBusiness(ITokenService tokenService, IParser<User, UserVO> parser)
+        public UserBusiness(ITokenService tokenService, IParser<User, UserVO> parser, IInputValidator inputValidator)
         {
             _repository = new UserRepository();
             _tokenService = tokenService;
             _userParser = parser;
+            _inputValidator = inputValidator;
         }
 
         public async Task<LoginOutput?> Login(string username, string password)
@@ -36,19 +38,19 @@ namespace CrudAPI.Business
         public async Task<UserVO> Register(UserVO userVO)
         {
             var user = _userParser.Parse(userVO);
-            try
+            if (user == null)
             {
-                user = _repository.Create(user);
-                return _userParser.Parse(user);
+                _inputValidator.Failed("Invalid value for field 'Gender'");
+                return null;
             }
-            catch (ArgumentException)
+        
+            user = _repository.Create(user);
+            if (user == null)
             {
-                throw;
+                _inputValidator.Failed($"Username '{userVO.Username}' already exists");
+                return null;
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            return _userParser.Parse(user);
         }
     }
 }

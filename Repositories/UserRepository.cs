@@ -14,7 +14,7 @@ namespace CrudAPI.Repositories
         public User Create(User entity)
         {
             if (Exists(entity.Username))
-                throw new Exception("Username already exists");
+                return null;
 
             _context.Add(entity);
             return entity;

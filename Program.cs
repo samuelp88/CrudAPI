@@ -27,6 +27,7 @@ builder.Services.AddSingleton(settings);
 builder.Services.AddScoped<IUserBusiness, UserBusiness>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IParser<User, UserVO>, UserParser>();
+builder.Services.AddScoped<IInputValidator, InputValidator>();
 
 //Auth
 var key = Encoding.ASCII.GetBytes(settings.GetSecret());

@@ -39,7 +39,7 @@ namespace CrudAPI.Data
                     Role = r.Role
                 };
 
-            throw new ArgumentException();
+            return null;
         }
 
         public List<User> Parse(List<UserVO> r)
@@ -56,6 +56,62 @@ namespace CrudAPI.Data
         {
             var lowerCase = input.ToLower();
             return lowerCase[0].ToString().ToUpper() + lowerCase.Substring(1);
+        }
+
+        public bool TryParse(User p, out UserVO r)
+        {
+            try
+            {
+                r = Parse(p);
+                return true;
+            }
+            catch (Exception e) when (e is ArgumentException)
+            {
+                r = null;
+                return false;
+            }
+        }
+
+        public bool TryParse(List<User> p, out List<UserVO> r)
+        {
+            try
+            {
+                r = Parse(p);
+                return true;
+            }
+            catch (Exception e) when (e is ArgumentException)
+            {
+                r = null;
+                return false;
+            }
+        }
+
+        public bool TryParse(UserVO r, out User p)
+        {
+            try
+            {
+                p = Parse(r);
+                return true;
+            }
+            catch (Exception e) when (e is ArgumentException)
+            {
+                p = null;
+                return false;
+            }
+        }
+
+        public bool TryParse(List<UserVO> r, out List<User> p)
+        {
+            try
+            {
+                p = Parse(r);
+                return true;
+            }
+            catch (Exception e) when (e is ArgumentException)
+            {
+                p = null;
+                return false;
+            }
         }
     }
 }

@@ -17,10 +17,12 @@ namespace CrudAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserBusiness _userBusiness;
+        private readonly IInputValidator _inputValidator;
 
-        public UserController(IUserBusiness userBusiness)
+        public UserController(IUserBusiness userBusiness, IInputValidator inputValidator)
         {
             _userBusiness = userBusiness;
+            _inputValidator = inputValidator;
         }
 
 
@@ -46,20 +48,12 @@ namespace CrudAPI.Controllers
             if (userData == null)
                 return BadRequest("Corpo inválido");
 
-            try
-            {
-                var registerOutput = await _userBusiness.Register(userData);
-                return Ok(registerOutput);
+            var registerOutput = await _userBusiness.Register(userData);
 
-            }
-            catch (ArgumentException e) when (e is ArgumentException)
-            {
-                return BadRequest("Gênero inválido");
-            }
-            catch (Exception)
-            {
-                return BadRequest("Nome de usuário já existe!");
-            }
+            if (_inputValidator.Sucess)
+                return Ok(registerOutput);
+            else
+                return BadRequest($"\"{string.Join("\" ", _inputValidator.Errors)}\"");
         }
 
         [HttpGet]
